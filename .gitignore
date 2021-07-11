@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+karma.db
+*.html
+*.db-wal
+*.db-shm
