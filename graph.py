@@ -1,4 +1,4 @@
-from typing import Set, Union
+from typing import Set, Optional
 from pathlib import Path
 from secrets import token_urlsafe
 
@@ -36,19 +36,15 @@ var options = {
 def html_graph(
         nodes: Set[User] = users.copy(),
         edges: Set[Relation] = relations.copy(),
-        user: Union[str, User, None] = None,
+        user: Optional[str] = None,
     ) -> Path:
 
-    if user is not None:
-        user_edges = {r for r in edges if user in r}
-        print(f"[User filter] Removed {len(edges) - len(user_edges)} edges")
-        edges = user_edges
+    if user:
+        node_edges = {r for r in edges if user in r}
+        print(f"Removed {len(edges) - len(node_edges)} edges")
+        edges = normalize_relations(node_edges, get_exchange_bounds(node_edges), (1, 50))
 
-    connected_nodes = {u for u in nodes if any(u in r for r in edges)}
-    print(f"Removed {len(nodes) - len(connected_nodes)} nodes")
-    nodes = connected_nodes
-
-    edges = normalize_relations(edges, get_exchange_bounds(edges), (1, 30))
+    nodes = {u for u in nodes if any(u in r for r in edges)}
 
     g = net.Network(width="100%", height="100%")
     g.set_options(graph_options)
@@ -61,10 +57,10 @@ def html_graph(
         try:
             g.add_edge(edge.from_user.id, edge.to_user.id, width=edge.exchange)
         except AssertionError as e:
-            print(f"{e}")
+            print(e)
 
-    print(f"Nodes in graph: {len(nodes)}")
-    print(f"Edges in graph: {len(edges)}")
+    print(f"Nodes in graph: {len(g.get_nodes())}")
+    print(f"Edges in graph: {len(g.get_edges())}")
 
     filename = HTML_DIR / f"{token_urlsafe(16)}.html"
     g.save_graph(str(filename))
