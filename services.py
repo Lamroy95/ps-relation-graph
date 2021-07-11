@@ -3,9 +3,10 @@ import sqlite3
 
 from models import User, Relation
 from utils import interp_value, recalculate_relations
+from config import SQLITE_DB_PATH
 
 
-conn = sqlite3.connect("karma.db")
+conn = sqlite3.connect(str(SQLITE_DB_PATH))
 cur = conn.cursor()
 
 
