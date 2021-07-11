@@ -1,3 +1,4 @@
+from numbers import Number
 from dataclasses import dataclass
 
 
@@ -7,7 +8,7 @@ class User:
     username: str
     first_name: str
     last_name: str
-    size: float
+    size: Number
 
     def __hash__(self):
         return hash((self.id, self.username, self.first_name, self.last_name))
@@ -22,7 +23,7 @@ class User:
 class Relation:
     from_user: User
     to_user: User
-    exchange: float
+    exchange: Number
 
     def __hash__(self):
         return hash(self.from_user) & hash(self.to_user)
